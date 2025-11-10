@@ -2,8 +2,8 @@ from sqlalchemy import BIGINT, Column, Integer, String, ForeignKey
 from src.models.sqlite.settings.base import Base
 
 
-class People(Base):
-    __tablename__ = "people"
+class Person(Base):
+    __tablename__ = "person"
 
     id = Column(BIGINT, primary_key=True)
     first_name = Column(String(50), nullable=False)
@@ -12,4 +12,4 @@ class People(Base):
     pet_id = Column(BIGINT, ForeignKey("pets.id"))
 
     def __repr__(self):
-        return f"People [name={self.first_name}, last_name={self.last_name}, pet_id={self.pet_id}]"
+        return f"Person [name={self.first_name}, last_name={self.last_name}, pet_id={self.pet_id}]"

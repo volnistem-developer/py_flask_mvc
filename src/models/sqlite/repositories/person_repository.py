@@ -1,15 +1,16 @@
 from sqlalchemy.orm.exc import NoResultFound
-from src.models.sqlite.entities.people import People
+from src.models.sqlite.entities.person import Person
 from src.models.sqlite.entities.pet import Pet
+from src.models.sqlite.interfaces.person_interface_repository import PersonRepositoryInterface
 
-class PeopleRepository:
+class PersonRepository(PersonRepositoryInterface):
     def __init__(self, db_connection) -> None:
         self.__db_connection = db_connection
 
     def insert(self, first_name: str, last_name: str, age: int, pet_id:int) -> None:
         with self.__db_connection as database:
             try:
-                person = People(
+                person = Person(
                     first_name = first_name,
                     last_name = last_name,
                     age = age,
@@ -22,17 +23,17 @@ class PeopleRepository:
                 database.session.rollback()
                 raise ex
     
-    def get(self, person_id: int) -> People:
+    def get(self, person_id: int) -> Person:
         with self.__db_connection as database:
             try:
                 result = (
                     database.session
-                        .query(People)
-                        .outerjoin(Pet, Pet.id == People.pet_id)
-                        .filter(People.id == person_id)
+                        .query(Person)
+                        .outerjoin(Pet, Pet.id == Person.pet_id)
+                        .filter(Person.id == person_id)
                         .with_entities(
-                            People.first_name,
-                            People.last_name,
+                            Person.first_name,
+                            Person.last_name,
                             Pet.name.label("pet_name"),
                             Pet.type.label("pet_type")
                         )
