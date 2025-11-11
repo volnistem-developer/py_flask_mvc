@@ -1,5 +1,6 @@
 from typing import Dict
 import re
+from src.models.sqlite.entities.person import Person
 from src.models.sqlite.interfaces.person_interface_repository import PersonRepositoryInterface
 
 class PersonController:
@@ -19,7 +20,20 @@ class PersonController:
 
         return formated
 
-    
+    def find(self, person_id: int) -> Dict:
+        person = self.__find_person_in_db(person_id)
+        response  = self.__format_response_with_pet(person)
+
+        return response
+        
+    def __find_person_in_db(self, person_id: int) -> Person:
+        person = self.__repository.get(person_id)
+
+        if not person:
+            raise Exception('Pessoa não encontrada!')
+        
+        return person
+
     def __validate_first_and_last_name(self, first_name: str, last_name: str) -> None:
         # Expressão regular para caracteres que não são letras
         non_valid_caracteres = re.compile(r'[^a-zA-Z]')
@@ -38,3 +52,18 @@ class PersonController:
                 "attributes": person_info
             }
         }
+
+    def __format_response_with_pet(self, person: Person) -> Dict:
+        return {
+            "data": {
+                "type": "Person",
+                "count": 1,
+                "attributes": {
+                    "first_name": person.first_name,
+                    "last_name": person.last_name,
+                    "pet_name": person.pet_name,
+                    "pet_type": person.pet_type
+                }
+            }
+        }
+    
