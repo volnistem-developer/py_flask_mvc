@@ -1,5 +1,7 @@
 from typing import Dict
 import re
+from src.errors.error_types.http_bad_request import HttpBadRequestError
+from src.errors.error_types.http_not_found import HttpNotFoundError
 from src.models.sqlite.entities.person import Person
 from src.models.sqlite.interfaces.person_interface_repository import PersonRepositoryInterface
 from .interfaces.person_controller import PersonControllerInterface
@@ -32,7 +34,7 @@ class PersonController(PersonControllerInterface):
         person = self.__repository.get(person_id)
 
         if not person:
-            raise Exception('Pessoa não encontrada!')
+            raise HttpNotFoundError('Pessoa não encontrada!')
         
         return person
 
@@ -41,7 +43,7 @@ class PersonController(PersonControllerInterface):
         non_valid_caracteres = re.compile(r'[^a-zA-Z]')
 
         if non_valid_caracteres.search(first_name) or non_valid_caracteres.search(last_name):
-            raise Exception("Nome da pessoa inválido!")
+            raise HttpBadRequestError("Nome da pessoa inválido!")
         
     def __insert(self, first_name: str, last_name: str, age: int, pet_id: int) -> None:
         self.__repository.insert(first_name, last_name, age, pet_id)
